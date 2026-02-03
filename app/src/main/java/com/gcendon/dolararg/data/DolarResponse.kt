@@ -1,6 +1,6 @@
-package com.gcendon.dolararg
+package com.gcendon.dolararg.data
 
-data class Dolar(
+data class DolarResponse(
     val nombre: String,
     val compra: Double,
     val venta: Double,
