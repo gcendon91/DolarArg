@@ -1,26 +1,42 @@
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.gcendon.dolararg.Dolar
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class DolarViewModel : ViewModel() {
 
-    // 1. El estado privado (encapsulamiento)
     private val _uiState = mutableStateOf<List<Dolar>>(emptyList())
-
-    // 2. Lo que la UI puede leer
     val uiState: State<List<Dolar>> = _uiState
 
+    // Configuramos Retrofit
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://dolarapi.com/v1/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val apiService = retrofit.create(DolarApiService::class.java)
+
     init {
-        // Al iniciar, cargamos datos "muckeados" (de prueba)
-        loadDolares()
+        fetchDolares()
     }
 
-    private fun loadDolares() {
-        _uiState.value = listOf(
-            Dolar("Dólar Blue", 1200.0, 1225.0, "Ahora"),
-            Dolar("Dólar Oficial", 850.0, 890.0, "Ahora"),
-            Dolar("Dólar MEP", 1150.0, 1170.0, "Ahora")
-        )
+    private fun fetchDolares() {
+        // Lanzamos una corrutina en el scope del ViewModel
+        // Si el ViewModel muere, la petición se cancela sola. ¡Magia!
+        viewModelScope.launch {
+            try {
+                val response = apiService.getDolares()
+                // Mapeamos de DolarResponse (API) a nuestro Dolar (App)
+                _uiState.value = response.map {
+                    Dolar(it.nombre, it.compra, it.venta, it.fechaActualizacion)
+                }
+            } catch (e: Exception) {
+                // Acá manejaríamos el error (ej: no hay internet)
+            }
+        }
     }
 }

@@ -54,4 +54,8 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    // Retrofit: El cliente HTTP
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // Converter Gson: Para pasar de JSON a nuestras Data Classes
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }
