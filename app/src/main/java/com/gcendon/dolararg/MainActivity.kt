@@ -1,10 +1,12 @@
 package com.gcendon.dolararg
 
+import android.os.Build
 import com.gcendon.dolararg.ui.DolarViewModel
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,94 +34,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gcendon.dolararg.model.Dolar
+import com.gcendon.dolararg.model.toArgentineCurrency
+import com.gcendon.dolararg.ui.DolarArgApp
 import com.gcendon.dolararg.ui.DolarUiState
 import com.gcendon.dolararg.ui.theme.DolarArgTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // enableEdgeToEdge() // Esto sirve para que la app use todo el alto de pantalla, por ahora comentalo si queres
         setContent {
             DolarArgTheme {
-                // 1. Obtenemos el ViewModel
                 val viewModel: DolarViewModel = viewModel()
-
-                // 2. Llamamos a la función principal que maneja los estados
-                // Ya no llamamos a DolarList directamente acá.
-                DolarArgApp(viewModel)
+                DolarArgApp(viewModel) // Esta función ahora la saca de DolarScreens.kt
             }
         }
     }
 }
 
-@Composable
-fun DolarList(dolares: List<Dolar>) {
-    // LazyColumn es como un "RecyclerView" moderno o un ListBox eficiente
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(dolares) { dolar ->
-            DolarCard(dolar)
-        }
-    }
-}
-
-@Composable
-fun DolarCard(dolar: Dolar) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = dolar.nombre, style = MaterialTheme.typography.headlineSmall)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "Compra: $${dolar.compra}")
-                Text(text = "Venta: $${dolar.venta}")
-            }
-        }
-    }
-}
-@Composable
-fun DolarArgApp(viewModel: DolarViewModel) {
-    val state = viewModel.uiState.value
-
-    // Box es como un contenedor que permite encimar cosas o centrarlas
-    Box(modifier = Modifier.fillMaxSize()) {
-        when (state) {
-            is DolarUiState.Loading -> {
-                // El clásico circulito de carga de Android
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-            is DolarUiState.Success -> {
-                // Si hay éxito, dibujamos la lista que ya teníamos
-                DolarList(dolares = state.dolares)
-            }
-            is DolarUiState.Error -> {
-                // Si hay error, mostramos mensaje y botón de reintento
-                ErrorView(mensaje = state.mensaje, onRetry = { viewModel.retry() })
-            }
-        }
-    }
-}
-
-@Composable
-fun ErrorView(mensaje: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = mensaje, color = Color.Red)
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onRetry) {
-            Text("Reintentar")
-        }
-    }
-}
