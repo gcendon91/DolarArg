@@ -58,4 +58,6 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     // Converter Gson: Para pasar de JSON a nuestras Data Classes
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+   //iconos
+    implementation("androidx.compose.material:material-icons-extended")
 }

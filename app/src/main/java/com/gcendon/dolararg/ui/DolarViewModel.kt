@@ -1,7 +1,9 @@
 package com.gcendon.dolararg.ui
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gcendon.dolararg.data.DolarRepository
@@ -20,6 +22,16 @@ class DolarViewModel : ViewModel() {
     // Nuevo estado para el Pull-to-refresh
     private val _isRefreshing = mutableStateOf(false)
     val isRefreshing: State<Boolean> = _isRefreshing
+
+    var showCalculator by mutableStateOf(false)
+        private set
+
+    var amountInput by mutableStateOf("")
+        private set
+
+    var isUsdToArs by mutableStateOf(true)
+        private set
+
 
     init {
         fetchDolares()
@@ -47,4 +59,21 @@ class DolarViewModel : ViewModel() {
     }
 
     fun retry() = fetchDolares()
+
+    fun toggleCalculator() {
+        showCalculator = !showCalculator
+        // Opcional: Limpiamos el número cuando se cierra para que la próxima vez esté vacío
+        if (!showCalculator) amountInput = ""
+    }
+
+    fun onAmountChange(input: String) {
+        // Validamos que solo entren números, puntos o comas
+        if (input.all { it.isDigit() || it == '.' || it == ',' }) {
+            amountInput = input.replace(',', '.') // Estandarizamos a punto decimal
+        }
+    }
+
+    fun toggleDirection() {
+        isUsdToArs = !isUsdToArs
+    }
 }
