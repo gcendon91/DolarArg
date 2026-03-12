@@ -10,6 +10,12 @@ data class Dolar(
     val fechaActualizacion: String
 )
 
+data class DolarHistorico(
+    val fecha: String, // La API devuelve "2024-03-11"
+    val compra: Double,
+    val venta: Double
+)
+
 fun Double.toArgentineCurrency(): String {
     val format = java.text.NumberFormat.getCurrencyInstance(java.util.Locale("es", "AR"))
     return format.format(this)

@@ -1,5 +1,6 @@
 package com.gcendon.dolararg.ui
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.gcendon.dolararg.data.DolarRepository
 import com.gcendon.dolararg.ui.DolarUiState
 import com.gcendon.dolararg.model.Dolar
+import com.gcendon.dolararg.model.DolarHistorico
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -30,6 +32,12 @@ class DolarViewModel : ViewModel() {
         private set
 
     var isUsdToArs by mutableStateOf(true)
+        private set
+
+    var historialState by mutableStateOf<List<DolarHistorico>>(emptyList())
+        private set
+
+    var isHistoryLoading by mutableStateOf(false)
         private set
 
 
@@ -75,5 +83,40 @@ class DolarViewModel : ViewModel() {
 
     fun toggleDirection() {
         isUsdToArs = !isUsdToArs
+    }
+
+    fun cargarHistorial(nombreDolar: String) {
+        val tipo = mapearNombreATipo(nombreDolar)
+        Log.d("DEBUG_API", "Navegando a historial con el tipo: [$tipo]")
+
+        viewModelScope.launch {
+            isHistoryLoading = true
+            try {
+                val datos = repository.getHistorial(tipo)
+                // --- AGREGÁ ESTE LOG ---
+                Log.d("DEBUG_API", "¡Éxito! Recibidos ${datos.size} puntos para $tipo")
+
+                historialState = datos
+            } catch (e: Exception) {
+                Log.e("DEBUG_API", "Fallo total: ${e.message}")
+                historialState = emptyList()
+            } finally {
+                isHistoryLoading = false
+            }
+        }
+    }
+
+    private fun mapearNombreATipo(nombre: String): String {
+        return when (nombre.uppercase()) {
+            "MEP" -> "bolsa"
+            "OFICIAL" -> "oficial"
+            "BLUE" -> "blue"
+            "TARJETA" -> "tarjeta"
+            "MAYORISTA" -> "mayorista"
+            "CRIPTO" -> "cripto"
+            "CONTADO CON LIQUIDACIÓN" -> "contadoconliqui"
+            "CCL" -> "contadoconliqui"
+            else -> nombre.lowercase().replace(" ", "")
+        }
     }
 }

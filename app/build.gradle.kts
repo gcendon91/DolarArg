@@ -60,4 +60,10 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
    //iconos
     implementation("androidx.compose.material:material-icons-extended")
+    //navegacion
+    implementation("androidx.navigation:navigation-compose:2.8.0")
+    // Librería Vico para Gráficos
+    implementation("com.patrykandpatrick.vico:compose:1.15.0")
+    implementation("com.patrykandpatrick.vico:compose-m3:1.15.0")
+    implementation("com.patrykandpatrick.vico:core:1.15.0")
 }

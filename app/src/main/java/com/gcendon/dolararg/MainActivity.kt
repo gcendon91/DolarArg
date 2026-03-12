@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gcendon.dolararg.model.Dolar
 import com.gcendon.dolararg.model.toArgentineCurrency
 import com.gcendon.dolararg.ui.DolarArgApp
+import com.gcendon.dolararg.ui.DolarNavigation
 import com.gcendon.dolararg.ui.DolarUiState
 import com.gcendon.dolararg.ui.theme.DolarArgTheme
 
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             DolarArgTheme {
                 val viewModel: DolarViewModel = viewModel()
-                DolarArgApp(viewModel) // Esta función ahora la saca de DolarScreens.kt
+                DolarNavigation(viewModel)
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.gcendon.dolararg.data
 
 import com.gcendon.dolararg.model.Dolar
+import com.gcendon.dolararg.model.DolarHistorico
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -31,5 +32,9 @@ class DolarRepository {
                 else -> 5
             }
         }
+    }
+
+    suspend fun getHistorial(tipo: String): List<DolarHistorico> {
+        return apiService.getHistorial(tipo)
     }
 }
